@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-10",
+  "tests": {
+    "passed_in_mono_environment": 42,
+    "ruff_check": "passed"
+  },
+  "sdk": "real definition constructed without opening ROS",
+  "scenarios": [
+    {
+      "scenario": "early_finish",
+      "visits": [
+        "S1",
+        "S2",
+        "S7"
+      ],
+      "outcome": "COMPLETED",
+      "confirmed_deposits": 1,
+      "synthetic": true,
+      "hardware_executed": false
+    },
+    {
+      "scenario": "recovery",
+      "visits": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7"
+      ],
+      "outcome": "COMPLETED",
+      "confirmed_deposits": 1,
+      "synthetic": true,
+      "hardware_executed": false
+    }
+  ],
+  "not_validated": [
+    "live ROS subscriptions",
+    "visual event recognition",
+    "model inference",
+    "physical execution"
+  ]
+}

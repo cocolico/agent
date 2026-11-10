@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tomato-supervisor"
+version = "0.1.0"
+description = "Evidence-driven tomato harvesting supervisor; replay and read-only SDK integration"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+tomato-agent = "tomato_agent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

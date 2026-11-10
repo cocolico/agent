@@ -1,0 +1,15 @@
+{
+  "max_age_s": 0.5,
+  "max_skew_s": 0.08,
+  "future_tolerance_s": 0.02,
+  "stable_s": 0.15,
+  "decision_ttl_s": 0.5,
+  "no_progress_s": 15.0,
+  "stage_timeout_s": 60.0,
+  "episode_timeout_s": 300.0,
+  "max_failures_per_target": 2,
+  "max_total_attempts_per_target": 4,
+  "max_unassociated_failures": 3,
+  "max_repositions": 2,
+  "observation_timeout_s": 5.0
+}
