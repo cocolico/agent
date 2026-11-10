@@ -404,11 +404,52 @@ class Supervisor:
         }
 
     def accept_simulated(self, proposal, snap, facts, *, handoff_confirmed=False):
-        """Only a replay/mock can advance commands. No hardware execution implementation."""
+        """Replay-only acceptance; real execution must use a prepared handoff receipt."""
         if not self.simulation:
             raise RuntimeError(
-                "real execution disabled; implement verified mono handoff first"
+                "real execution disabled through this API; use a prepared mono handoff"
             )
+        self._accept(proposal, snap, facts, handoff_confirmed=handoff_confirmed)
+
+    def accept_prepared(self, proposal, snap, facts, receipt):
+        """Commit only a held, prepared execution session; activation follows commit."""
+        if self.simulation:
+            raise RuntimeError("use simulated acceptance for replay")
+        if (
+            receipt.decision_id != proposal.decision_id
+            or receipt.stage_epoch != proposal.expected_epoch + 1
+            or not receipt.hold_confirmed
+            or receipt.active
+        ):
+            raise ValueError("invalid execution handoff receipt")
+        if receipt.skill != proposal.skill:
+            raise ValueError("prepared skill does not match proposal")
+        self._accept(proposal, snap, facts, handoff_confirmed=True)
+
+    def propose_resume(self, snap, facts):
+        """Restart a retired same-stage controller only from a verified entry state."""
+        current = self.decide(snap, facts)
+        if current.kind != "CONTINUE" or self.memory.stage is None or self.review_latch:
+            return None
+        skill = self.memory.recovery_skill or STAGE_SKILL[self.memory.stage]
+        required = ENTRY[self.memory.stage]
+        if skill == "disengage_left":
+            required = ("right_stable", "contact_releasable")
+        elif skill == "deposit_held_fruit":
+            required = ("fruit_held_detached", "right_stable", "deposit_path_ready")
+        if facts.missing(required) or skill not in self.skills:
+            return None
+        proposal = replace(
+            current,
+            kind="RESUME",
+            skill=skill,
+            required=required,
+            reason="resume_from_verified_entry",
+        )
+        self.issued = {proposal.decision_id: proposal}
+        return proposal
+
+    def _accept(self, proposal, snap, facts, *, handoff_confirmed):
         if self.issued.get(proposal.decision_id) != proposal:
             raise ValueError("unknown or superseded proposal")
         if self.review_latch:
@@ -423,6 +464,12 @@ class Supervisor:
         if not handoff_confirmed:
             raise ValueError("mock handoff confirmation required")
         current = self.decide(snap, facts)
+        if proposal.kind == "RESUME":
+            if current.kind != "CONTINUE" or facts.missing(proposal.required):
+                raise ValueError("resume conditions changed")
+            current = replace(
+                current, kind="RESUME", skill=proposal.skill, required=proposal.required
+            )
         fields = (
             "kind",
             "target_stage",
@@ -433,7 +480,7 @@ class Supervisor:
         )
         if any(getattr(current, k) != getattr(proposal, k) for k in fields):
             raise ValueError("conditions changed; replan")
-        if proposal.kind not in {"TRANSITION", "RECOVER", "FINISH"}:
+        if proposal.kind not in {"TRANSITION", "RECOVER", "FINISH", "RESUME"}:
             raise ValueError("proposal cannot be executed")
         m = self.memory
         m.epoch += 1

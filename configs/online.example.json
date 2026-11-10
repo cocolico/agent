@@ -1,0 +1,30 @@
+{
+  "vlm_url": "http://127.0.0.1:8009/v1/chat/completions",
+  "vlm_model": "Qwen3-VL-2B-Instruct",
+  "vlm_timeout_s": 3.0,
+  "max_result_age_s": 4.0,
+  "supervision_deadline_s": 6.0,
+  "vlm_interval_s": 0.5,
+  "poll_hz": 20.0,
+  "history_frames": 3,
+  "image_max_side": 512,
+  "max_tokens": 1600,
+  "mono_root": "/home/user/lpy/li-agent-mono",
+  "pi05_uri": "ws://127.0.0.1:8010",
+  "model_contract": "/home/user/ty/new/agent/runtime/pi05-stage-model.json",
+  "log_path": "/home/user/ty/new/agent/outputs/online.jsonl",
+  "validated_skills": [],
+  "max_runtime_s": 300.0,
+  "handoff_timeout_s": 10.0,
+  "max_hold_drift_rad": 0.03,
+  "execution": {
+    "mode": "rtc",
+    "control_hz": 100.0,
+    "rounds": 300,
+    "sg_window": 0,
+    "ruckig_enabled": true,
+    "ruckig_max_velocity": 1.0,
+    "ruckig_max_acceleration": 3.0,
+    "ruckig_max_jerk": 30.0
+  }
+}

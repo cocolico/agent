@@ -11,6 +11,8 @@ dependencies = []
 
 [project.scripts]
 tomato-agent = "tomato_agent.cli:main"
+tomato-agent-online = "tomato_agent.online.runner:main"
+tomato-pi05-stages = "tomato_agent.stage_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -145,8 +145,9 @@ def require_stage_prompt_contract(metadata):
 class PromptCheckedClient:
     """Verify the server's effective prompt on every prediction, not metadata alone."""
 
-    def __init__(self, client):
+    def __init__(self, client, *, epoch=None):
         self.client = client
+        self.epoch = epoch
 
     def get_server_metadata(self):
         return self.client.get_server_metadata()
@@ -155,11 +156,22 @@ class PromptCheckedClient:
         return self.client.reset()  # Intentionally not a physical stop.
 
     def infer(self, request):
+        wrapped = "rtc" in request
+        observation = request["observation"] if wrapped else request
+        prompt = observation.get("prompt")
+        if self.epoch is not None:
+            observation = {**observation, "agent_epoch": self.epoch}
+            request = (
+                {**request, "observation": observation} if wrapped else observation
+            )
         response = self.client.infer(request)
-        if not isinstance(response, dict) or response.get(
-            "effective_prompt"
-        ) != request.get("prompt"):
+        if not isinstance(response, dict) or response.get("effective_prompt") != prompt:
             raise RuntimeError("server effective prompt differs or receipt is absent")
+        if self.epoch is not None and (
+            type(response.get("agent_epoch")) is not int
+            or response["agent_epoch"] != self.epoch
+        ):
+            raise RuntimeError("response belongs to another execution epoch")
         return response
 
 

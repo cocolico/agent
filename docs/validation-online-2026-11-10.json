@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-10",
+  "tests_run": 63,
+  "passed": 62,
+  "skipped": [
+    {
+      "test": "test_real_definition_keeps_topics_and_never_connects (test_local_sdk.LocalSDKTests.test_real_definition_keeps_topics_and_never_connects)",
+      "reason": "optional mono SDK environment"
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "scope": "Online control path tested with model/controller substitutes; no hardware commands",
+  "stage_service_metadata_check": {
+    "checkpoint": "/home/user/lpy/Pi05/checkpoints/zhiwei/trick-pi05/step-00007999_artifact-b487ba44-7ea8-41bb-92ce-f95256b46861/deploy/bundle",
+    "state_dim": 54,
+    "action_dim": 54,
+    "action_horizon": 50,
+    "stage_prompt_mode": "per_request",
+    "effective_prompt_echo": true,
+    "agent_epoch_echo": true,
+    "warmed_up": false
+  },
+  "lightweight_models_downloaded": false,
+  "live_model_or_robot_execution": false,
+  "external_source_files_modified": false
+}
